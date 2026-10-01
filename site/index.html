@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arakshan Suite — Download</title>
+<meta name="description" content="Download Arakshan Tour & Travels Suite for Windows.">
+<style>
+  :root{--bg:#f7f8fa;--card:#fff;--ink:#0f1b33;--ink2:#4a5568;--mute:#8896a8;--line:#e2e6ea;--pri:#2563eb;--pri2:#1d4ed8;--ok:#047857;--warn:#b45309}
+  @media (prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#111a2e;--ink:#eef2f8;--ink2:#b6c2d4;--mute:#7d8da5;--line:#22304a;--pri:#3b82f6;--pri2:#2563eb;--ok:#34d399;--warn:#fbbf24}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+  main{max-width:720px;margin:0 auto;padding:48px 16px 64px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px}
+  h1{font-size:28px;margin:0;line-height:1.2}
+  .sub{color:var(--ink2);margin:2px 0 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between}
+  .ver{font-size:13px;color:var(--mute)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--pri);color:#fff;text-decoration:none;font-weight:700;padding:14px 22px;border-radius:12px;border:0;font-size:16px;cursor:pointer}
+  .btn:hover{background:var(--pri2)}
+  .btn[aria-disabled=true]{opacity:.55;pointer-events:none}
+  h2{font-size:17px;margin:0 0 10px}
+  ol,ul{margin:0;padding-left:20px;color:var(--ink2)} li{margin:6px 0}
+  code{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px;word-break:break-all}
+  .note{border-left:4px solid var(--warn);padding:10px 14px;background:var(--bg);border-radius:0 10px 10px 0;color:var(--ink2);font-size:14px}
+  .ok{color:var(--ok)} small{color:var(--mute)}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">
+    <div class="logo">A</div>
+    <div><h1>Arakshan Suite</h1><p class="sub">Tour &amp; Travels — bookings, invoices, GST and check-in for Windows</p></div>
+  </div>
+
+  <section class="card">
+    <div class="row">
+      <div>
+        <div id="ver" class="ver">Looking up the latest version…</div>
+        <div id="meta" class="ver"></div>
+      </div>
+      <a id="dl" class="btn" href="#" aria-disabled="true" rel="noopener">⬇ Download for Windows</a>
+    </div>
+    <p id="err" class="ver" style="margin:12px 0 0"></p>
+  </section>
+
+  <section class="card">
+    <h2>Install</h2>
+    <ol>
+      <li>Download <code>Arakshan.exe</code> and put it in its own folder, e.g. <code>C:\Arakshan</code>.</li>
+      <li>Double-click it. Your data is created in an <code>Arakshan_Data</code> folder next to the program.</li>
+      <li>Open <b>Settings</b> and connect Airtable and ImageKit (or use <b>Import settings file</b> if you were given one).</li>
+      <li>Later updates: <b>Settings → Updates → Check for updates</b>.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Windows may warn you</h2>
+    <p class="note">The program is not signed with a paid certificate, so Windows SmartScreen can show “Windows protected your PC”.
+    Choose <b>More info → Run anyway</b>. To be sure the file is genuine, compare its SHA-256 below with:
+    <code>certutil -hashfile Arakshan.exe SHA256</code></p>
+    <p id="sha" class="ver" style="margin-top:12px"></p>
+  </section>
+
+  <section class="card">
+    <h2>What's new</h2>
+    <div id="notes" style="color:var(--ink2);white-space:pre-wrap;font-size:14px">—</div>
+  </section>
+  <small>Private software for Arakshan Tour &amp; Travels users.</small>
+</main>
+
+<script>
+  // ▼ set to "your-github-username/your-repo" after creating the repository (see docs/DEPLOY.md)
+  const REPO = "darkcoder19/arakshan-downloads";
+
+  (async () => {
+    const $ = id => document.getElementById(id);
+    try {
+      if (REPO.startsWith("OWNER/")) throw new Error("This page is not connected to a GitHub repository yet.");
+      const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {headers:{Accept:"application/vnd.github+json"}});
+      if (!r.ok) throw new Error(r.status === 404 ? "No release has been published yet." : "Could not load the release (" + r.status + ").");
+      const d = await r.json();
+      const a = (d.assets || []).find(x => /\.exe$/i.test(x.name));
+      if (!a) throw new Error("The latest release has no .exe file attached.");
+      $("ver").innerHTML = `Version <b>${(d.tag_name||"").replace(/^v/i,"")}</b> · ${(a.size/1048576).toFixed(0)} MB`;
+      $("meta").textContent = "Released " + new Date(d.published_at).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
+      const dl = $("dl"); dl.href = a.browser_download_url; dl.removeAttribute("aria-disabled");
+      const m = (d.body||"").match(/sha-?256\s*[:=]\s*([A-Fa-f0-9]{64})/i);
+      $("sha").innerHTML = m ? "SHA-256: <code>" + m[1].toLowerCase() + "</code>" : "";
+      $("notes").textContent = (d.body||"").replace(/sha-?256\s*[:=]\s*[A-Fa-f0-9]{64}/ig,"").trim() || "—";
+    } catch (e) {
+      $("ver").textContent = "Download not available yet";
+      $("err").textContent = e.message;
+    }
+  })();
+</script>
+</body>
+</html>
