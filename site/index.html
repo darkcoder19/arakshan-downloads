@@ -51,9 +51,9 @@
   <section class="card">
     <h2>Install</h2>
     <ol>
-      <li>Download <code>Arakshan.exe</code> and put it in its own folder, e.g. <code>C:\Arakshan</code>.</li>
-      <li>Double-click it. Your data is created in an <code>Arakshan_Data</code> folder next to the program.</li>
-      <li>Open <b>Settings</b> and connect Airtable and ImageKit (or use <b>Import settings file</b> if you were given one).</li>
+      <li>Download and run <code>Arakshan_Setup.exe</code>. It installs the app and creates your data folders (default: <code>Documents\Arakshan</code>).</li>
+      <li>At the end, tick <b>Open the Connection details file</b>. In Notepad, paste your Airtable and ImageKit details after each “=”, save, and close it.</li>
+      <li>Start Arakshan. It reads the file once, keeps the details privately, and clears the values from the page.</li>
       <li>Later updates: <b>Settings → Updates → Check for updates</b>.</li>
     </ol>
   </section>
@@ -84,7 +84,8 @@
       const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {headers:{Accept:"application/vnd.github+json"}});
       if (!r.ok) throw new Error(r.status === 404 ? "No release has been published yet." : "Could not load the release (" + r.status + ").");
       const d = await r.json();
-      const a = (d.assets || []).find(x => /\.exe$/i.test(x.name));
+      const exes = (d.assets || []).filter(x => /\.exe$/i.test(x.name));
+      const a = exes.find(x => /setup/i.test(x.name)) || exes[0];
       if (!a) throw new Error("The latest release has no .exe file attached.");
       $("ver").innerHTML = `Version <b>${(d.tag_name||"").replace(/^v/i,"")}</b> · ${(a.size/1048576).toFixed(0)} MB`;
       $("meta").textContent = "Released " + new Date(d.published_at).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
